@@ -1,5 +1,3 @@
-#!/bin/sh
-
 BAS2BIN="../../c/bas2bin_for_IchigoJam/bas2bin"
 LPC21ISP="../../c/lpc21isp_197k/lpc21isp"
 USBSERIAL="/dev/tty.SLAB_USBtoUART"
@@ -10,8 +8,10 @@ all: build write
 
 build:
 	cargo build --release
-	arm-none-eabi-objcopy -O ihex ${DST}/rust4ij ${DST}/rust4ij.hex
-	arm-none-eabi-objcopy -O binary ${DST}/rust4ij ${DST}/rust4ij.bin
+	#arm-none-eabi-objcopy -O ihex ${DST}/rust4ij ${DST}/rust4ij.hex
+	#arm-none-eabi-objcopy --only-section=.text -O binary ${DST}/rust4ij ${DST}/rust4ij.bin
+	arm-none-eabi-objcopy --remove-section=.ARM.exidx.main -O binary ${DST}/rust4ij ${DST}/rust4ij.bin
+	ls -l ${DST}/rust4ij.bin
 
 clean:
 	cargo clean
@@ -26,3 +26,5 @@ disasm:
 	arm-none-eabi-objdump -D -bbinary -marm -Mforce-thumb2 $(DST)/rust4ij.bin
 	wc -c < $(DST)/rust4ij.bin
 
+sections:
+	arm-none-eabi-objdump -x $(DST)/rust4ij
